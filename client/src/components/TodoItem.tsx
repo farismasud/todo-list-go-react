@@ -3,7 +3,7 @@ import { FaCheckCircle } from "react-icons/fa";
 import { MdDelete } from "react-icons/md";
 import { Todo } from "./TodoList";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { BASE_URL } from "../App";
+// import { BASE_URL } from "../App";
 
 const TodoItem = ({ todo }: { todo: Todo }) => {
 	const queryClient = useQueryClient();
@@ -13,7 +13,10 @@ const TodoItem = ({ todo }: { todo: Todo }) => {
 		mutationFn: async () => {
 			if (todo.completed) return alert("Todo is already completed");
 			try {
-				const res = await fetch(BASE_URL + `/todos/${todo._id}`, {
+				// const res = await fetch(BASE_URL + `/todos/${todo._id}`, {
+				// 	method: "PATCH",
+				// });
+				const res = await fetch(`http://localhost:5000/api/todos/${todo._id}`, {
 					method: "PATCH",
 				});
 				const data = await res.json();
@@ -34,7 +37,10 @@ const TodoItem = ({ todo }: { todo: Todo }) => {
 		mutationKey: ["deleteTodo"],
 		mutationFn: async () => {
 			try {
-				const res = await fetch(BASE_URL + `/todos/${todo._id}`, {
+				// const res = await fetch(BASE_URL + `/todos/${todo._id}`, {
+				// 	method: "DELETE",
+				// });
+				const res = await fetch(`http://localhost:5000/api/todos/${todo._id}`, {
 					method: "DELETE",
 				});
 				const data = await res.json();
