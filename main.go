@@ -1,10 +1,10 @@
 package main
 
 import (
+	"context"
 	"fmt"
 	"log"
 	"os"
-	"context"
 
 	"github.com/gofiber/fiber/v2"
 	"github.com/joho/godotenv"
@@ -15,22 +15,24 @@ import (
 )
 
 type Todo struct {
-	ID        primitive.ObjectID 	`json:"_id,omitempty" bson:"_id,omitempty"`
-	Completed bool  				`json:"completed"`
-	Body      string				`json:"body"`
+	ID        primitive.ObjectID `json:"_id,omitempty" bson:"_id,omitempty"`
+	Completed bool               `json:"completed"`
+	Body      string             `json:"body"`
 }
 
 var collection *mongo.Collection
 
 func main() {
-	fmt.Println("Hello, World!")
+	fmt.Println("hello world")
 
-	err := godotenv.Load(".env")
-	if err != nil {
-		log.Fatal("Error loading .env file", err)
+	if os.Getenv("ENV") != "production" {
+		// Load the .env file if not in production
+		err := godotenv.Load(".env")
+		if err != nil {
+			log.Fatal("Error loading .env file:", err)
+		}
 	}
 
-	// Connection MangoDB
 	MONGODB_URI := os.Getenv("MONGODB_URI")
 	clientOptions := options.Client().ApplyURI(MONGODB_URI)
 	client, err := mongo.Connect(context.Background(), clientOptions)
@@ -46,11 +48,16 @@ func main() {
 		log.Fatal(err)
 	}
 
-	fmt.Println("Connected to MongoDB!")
+	fmt.Println("Connected to MONGODB ATLAS")
 
 	collection = client.Database("golang_db").Collection("todos")
-	
+
 	app := fiber.New()
+
+	// app.Use(cors.New(cors.Config{
+	// 	AllowOrigins: "http://localhost:5173",
+	// 	AllowHeaders: "Origin,Content-Type,Accept",
+	// }))
 
 	app.Get("/api/todos", getTodos)
 	app.Post("/api/todos", createTodo)
@@ -61,7 +68,13 @@ func main() {
 	if port == "" {
 		port = "5000"
 	}
+
+	if os.Getenv("ENV") == "production" {
+		app.Static("/", "./client/dist")
+	}
+
 	log.Fatal(app.Listen("0.0.0.0:" + port))
+
 }
 
 func getTodos(c *fiber.Ctx) error {
@@ -70,7 +83,7 @@ func getTodos(c *fiber.Ctx) error {
 	cursor, err := collection.Find(context.Background(), bson.M{})
 
 	if err != nil {
-		log.Fatal(err)
+		return err
 	}
 
 	defer cursor.Close(context.Background())
@@ -88,6 +101,7 @@ func getTodos(c *fiber.Ctx) error {
 
 func createTodo(c *fiber.Ctx) error {
 	todo := new(Todo)
+	// {id:0,completed:false,body:""}
 
 	if err := c.BodyParser(todo); err != nil {
 		return err
@@ -97,7 +111,7 @@ func createTodo(c *fiber.Ctx) error {
 		return c.Status(400).JSON(fiber.Map{"error": "Todo body cannot be empty"})
 	}
 
-	insertResult,  err := collection.InsertOne(context.Background(), todo)
+	insertResult, err := collection.InsertOne(context.Background(), todo)
 	if err != nil {
 		return err
 	}

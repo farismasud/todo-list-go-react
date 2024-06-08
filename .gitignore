@@ -4,6 +4,10 @@
 .vscode
 node_modules
 
+# dist
+dist-ssr
+*.local
+
 # Compiled Object files, Static and Dynamic libs (Shared Objects)
 *.o
 *.a
@@ -15,7 +19,13 @@ _test
 vendor/
 
 # logs
+logs
 *.log
+npm-debug.log*
+yard-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
 
 # Compiled binary files
 *.exe
