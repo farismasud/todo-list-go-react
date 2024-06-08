@@ -1,6 +1,5 @@
-#Todo List App
+Todo List App
 
-### Tech 
 React with Go Complete Fullstack App - TypeScript, React Query, MongoDB, ChakraUI
 
 ### .env file
