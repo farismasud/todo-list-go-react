@@ -14,4 +14,14 @@ ENV=development
 
 ```shell
 go run main.go
+
+or
+
+air
+```
+then 
+```shell
+cd client
+
+npm run dev
 ```
